@@ -1,0 +1,65 @@
+name: React Docker CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+    # Step 1: Checkout source code
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+
+    # Step 2: Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+
+    # Step 3: Install dependencies
+    - name: Install Dependencies
+      run: npm install
+
+
+    # Step 4: Build React App
+    - name: Build React App
+      run: npm run build
+
+
+    # Step 5: Build Docker Image
+    - name: Build Docker Image
+      run: docker build -t react-app:latest .
+
+
+    # Step 6: Show Docker Images
+    - name: List Docker Images
+      run: docker images
+
+
+    # Step 7: (Optional) Save Docker image as artifact
+    - name: Save Docker Image
+      run: docker save react-app:latest -o react-app.tar
+
+
+    # Step 8: Upload artifact
+    - name: Upload Docker Image Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: react-app-image
+        path: react-app.tar
+
+
+    # Step 9: Deployment message
+    - name: Deployment Status
+      run: echo "Build completed successfully. Ready for deployment."
